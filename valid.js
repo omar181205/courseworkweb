@@ -59,4 +59,4 @@ const validatePassword = (password) => {
 next();
 
 };
-
+module.exports={validateSignup};

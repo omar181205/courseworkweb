@@ -8,11 +8,12 @@ const signToken = (id, role) => {
 
 // POST /signup
 const signUp = (req, res) => {
-  const email = req.body.email;
+  const name = req.body.name;
+    const email = req.body.email;
   const password = req.body.password;
-  const role = 'user'; // default to non-admin
+  const role =  req.body.role ||'user'; 
 
-  if (!email || !password) {
+  if (!email || !password || !name) {
     return res.status(400).send('Please provide email, and password.');
   }
 
@@ -22,13 +23,12 @@ const signUp = (req, res) => {
       return res.status(500).send('Error hashing password.');
     }
 
-    // Insert
-    const query = `
-      INSERT INTO USER (EMAIL, ROLE, PASSWORD)
-      VALUES ('${email}', '${role}', '${hashedPassword}')
-    `;
-
-    db.run(query, (err) => {
+    // Insert with parameterized query
+    const query = `INSERT INTO USER (NAME, EMAIL, ROLE, PASSWORD) VALUES 
+    (?, ?, ?, ?)`;
+    const params = [name, email, role, hashedPassword];
+    
+    db.run(query, params, function(err) {
       if (err) {
         // Handle unique constraint violation
         if (err.message.includes('UNIQUE constraint')) {
@@ -38,7 +38,7 @@ const signUp = (req, res) => {
         return res.status(500).send('Database error.');
       }
 
-      // Create token
+      // Create token using this.lastID from the statement
       const token = signToken(this.lastID, role);
       return res.status(201).json({
         status: 'success',
@@ -57,14 +57,15 @@ const login = (req, res) => {
         return res.status(400).send('Please provide email and password.');
     }
 
-    console.log("Login attempt:", email, password);
-    const query = `SELECT * FROM USER WHERE EMAIL='${email}'`;
 
-    db.get(query, (err, row) => {
+    const query = `SELECT * FROM USER WHERE EMAIL = ?`;
+
+    db.get(query, [email], (err, row) => {
         if (err) {
             console.log(err);
             return res.status(500).send('Database error');
         }
+
 
         // Compare the hashed password
         bcrypt.compare(password, row.PASSWORD, (err, isMatch) => {
