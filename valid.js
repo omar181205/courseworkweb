@@ -14,7 +14,6 @@ const isStrongPassword = (password) => {
   return passRegex.test(password.trim());
 };
  
- 
 // Checks if required fields exist and are non-empty
 const validateRequired = (fields, requiredKeys) => {
   for (const key of requiredKeys) {
@@ -34,17 +33,16 @@ const validateEmail = (email) => {
 const validatePassword = (password) => {
   if (!password) return 'Password is required';
   if (!isStrongPassword(password))
-    return 'Password must have 8+ chars, upper, lower, number, and special char';
+    return 'Please use a stronger password: at least 8 characters including uppercase, lowercase, a number and a special character.';
   return null;
 };
-
 
  const validateSignup = (req,res,next) =>{
   let {name,email,password} = req.body;
   name = sanitizeInput(name);
   email = sanitizeInput(email);
 
-  const requiredError = validateRequired({name,email,pasword}, ['name','email','password']);
+  const requiredError = validateRequired({name, email, password}, ['name','email','password']);
   if(requiredError) return res.status(400).json({error: requiredError})
 
   const emailerror = validateEmail(email);
@@ -59,4 +57,4 @@ const validatePassword = (password) => {
 next();
 
 };
-module.exports={validateSignup};
+module.exports={validateSignup , validatePassword, validateEmail, validateRequired, sanitizeInput, isValidEmail, isStrongPassword};

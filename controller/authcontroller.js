@@ -14,7 +14,7 @@ const signUp = (req, res) => {
   const role =  req.body.role ||'user'; 
 
   if (!email || !password || !name) {
-    return res.status(400).send('Please provide email, and password.');
+    return res.status(400).send('Please provide name,email, and password.');
   }
 
   bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -50,7 +50,7 @@ const signUp = (req, res) => {
 };
 
 const login = (req, res) => {
-    const email = req.body.email;
+    const email = (req.body.email || '').trim().toLowerCase();
     const password = req.body.password;
 
     if (!email || !password) {
