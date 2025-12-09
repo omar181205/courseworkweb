@@ -30,7 +30,6 @@ const signUp = (req, res) => {
     
     db.run(query, params, function(err) {
       if (err) {
-        // Handle unique constraint violation
         if (err.message.includes('UNIQUE constraint')) {
           return res.status(400).send('Email already exists.');
         }

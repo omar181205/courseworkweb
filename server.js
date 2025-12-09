@@ -13,7 +13,10 @@ db.serialize(() =>  {
     });
     db.run(db_access.createEnrolmentTable , (err) => {
         if(err) console.log('error creating enrolment table', err.message);
-});
+    });
+    db.run(db_access.createGradesTable , (err) => {
+        if(err) console.log('error creating grades table', err.message);
+    });
 });
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)

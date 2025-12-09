@@ -26,10 +26,22 @@ const createEnrolmentTable = `CREATE TABLE IF NOT EXISTS ENROLMENT (
     FOREIGN KEY (STUDENT_ID) REFERENCES USER(ID)
 )`;
 
+const createGradesTable = `CREATE TABLE IF NOT EXISTS GRADES (
+    GRADE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    STUDENT_ID INTEGER NOT NULL,
+    COURSE_ID INTEGER NOT NULL,
+    GRADE_VALUE TEXT,
+    FOREIGN KEY (STUDENT_ID) REFERENCES USER(ID),
+    FOREIGN KEY (COURSE_ID) REFERENCES COURSES(COURSE_ID)
+)`;
+
+
+
 module.exports = {
     db,
     createUserTable,
     createCoursesTable,
     createEnrolmentTable,
+    createGradesTable,
 };
 
