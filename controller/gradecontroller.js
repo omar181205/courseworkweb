@@ -1,6 +1,5 @@
 const { db } = require('../db');
 
-// Get all grades for logged in student
 const getStudentGrades = (req, res) => {
     const studentId = req.user.id;
 
@@ -11,7 +10,6 @@ const getStudentGrades = (req, res) => {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
         }
-
         res.status(200).json({
             status: 'success',
             message: 'Student grades retrieved successfully',
@@ -19,11 +17,8 @@ const getStudentGrades = (req, res) => {
         });
     });
 };
-
-// Get all grades for a specific course
 const getCourseGrades = (req, res) => {
     const courseId = req.params.courseId;
-
     const query = `SELECT * FROM GRADES WHERE COURSE_ID = ? ORDER BY STUDENT_ID ASC`;
 
     db.all(query, [courseId], (err, rows) => {
@@ -39,8 +34,6 @@ const getCourseGrades = (req, res) => {
         });
     });
 };
-
-// Create a grade for a student
 const createGrade = (req, res) => {
     const STUDENT_ID = req.body.STUDENT_ID;
     const COURSE_ID = req.body.COURSE_ID;

@@ -35,7 +35,14 @@ const createGradesTable = `CREATE TABLE IF NOT EXISTS GRADES (
     FOREIGN KEY (COURSE_ID) REFERENCES COURSES(COURSE_ID)
 )`;
 
-
+const createMessagesTable = `CREATE TABLE IF NOT EXISTS MESSAGES (
+    FROM_USER_ID INTEGER NOT NULL,
+    TO_USER_ID INTEGER NOT NULL,
+    MESSAGES_HISTORY TEXT,
+    PRIMARY KEY (FROM_USER_ID, TO_USER_ID),
+    FOREIGN KEY (FROM_USER_ID) REFERENCES USER(ID),
+    FOREIGN KEY (TO_USER_ID) REFERENCES USER(ID)
+)`;
 
 module.exports = {
     db,
@@ -43,5 +50,6 @@ module.exports = {
     createCoursesTable,
     createEnrolmentTable,
     createGradesTable,
+    createMessagesTable,
 };
 
