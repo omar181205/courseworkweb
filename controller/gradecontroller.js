@@ -59,7 +59,6 @@ const createGrade = (req, res) => {
     });
 };
 
-// Update a student's grade (for teachers)
 const updateGrade = (req, res) => {
     const gradeId = req.params.gradeId;
     const GRADE_VALUE = req.body.GRADE_VALUE;

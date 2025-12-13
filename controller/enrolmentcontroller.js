@@ -61,8 +61,6 @@ const enrollStudent = (req, res) => {
     if (!STUDENT_ID || !EMAIL) {
         return res.status(400).json({ error: 'STUDENT_ID and EMAIL are required' });
     }
-
-    // First, insert the enrollment
     const enrollQuery = `INSERT INTO ENROLMENT (COURSE_ID, STUDENT_ID, EMAIL) VALUES (?, ?, ?)`;
 
     db.run(enrollQuery, [courseId, STUDENT_ID, EMAIL], function(err) {
@@ -70,8 +68,6 @@ const enrollStudent = (req, res) => {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
         }
-
-        // Then, decrease the course capacity
         const updateCapacityQuery = `UPDATE COURSES SET CAPACITY = CAPACITY - 1 WHERE COURSE_ID = ?`;
         
         db.run(updateCapacityQuery, [courseId], function(err) {

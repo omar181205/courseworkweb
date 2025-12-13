@@ -1,6 +1,5 @@
 const { db } = require('../db');
 
-// Create a new course
 const createCourse = (req, res) => {
     const COURSE_NAME = req.body.COURSE_NAME;
     const USER_ID = req.body.USER_ID;
@@ -26,7 +25,6 @@ const createCourse = (req, res) => {
     });
 };
 
-// Get all courses
 const getAllCourses = (req, res) => {
     const query = `SELECT * FROM COURSES`;
 
@@ -44,7 +42,6 @@ const getAllCourses = (req, res) => {
     });
 };
 
-// Get course by ID
 const getCourseById = (req, res) => {
     const id = req.params.id;
 
@@ -67,8 +64,6 @@ const getCourseById = (req, res) => {
         });
     });
 };
-
-// Update course
 const updateCourse = (req, res) => {
     const id = req.params.id;
     const CAPACITY = req.body.CAPACITY;
@@ -95,8 +90,6 @@ const updateCourse = (req, res) => {
         });
     });
 };
-
-// Delete course
 const deleteCourse = (req, res) => {
     const id = req.params.id;
 
