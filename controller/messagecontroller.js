@@ -1,6 +1,4 @@
 const { db } = require('../db');
-
-// Get messages for logged in user
 const getMyMessages = (req, res) => {
     const userId = req.user.id;
 
@@ -37,10 +35,8 @@ const sendMessage = (req, res) => {
         }
 
         if (row) {
-            // Conversation exists, append message
             const currentHistory = row.MESSAGES_HISTORY || '';
             const newHistory = currentHistory ? `${currentHistory}|||${MESSAGE_TEXT}` : MESSAGE_TEXT;
-
             const updateQuery = `UPDATE MESSAGES SET MESSAGES_HISTORY = ? WHERE FROM_USER_ID = ? AND TO_USER_ID = ?`;
 
             db.run(updateQuery, [newHistory, FROM_USER_ID, TO_USER_ID], function(err) {
@@ -48,16 +44,14 @@ const sendMessage = (req, res) => {
                     console.error(err);
                     return res.status(500).json({ error: 'Database error' });
                 }
-
                 res.status(200).json({
                     status: 'success',
                     message: 'Message sent successfully'
                 });
             });
-        } else {
-            // New conversation, create it
+        } else 
+        {
             const insertQuery = `INSERT INTO MESSAGES (FROM_USER_ID, TO_USER_ID, MESSAGES_HISTORY) VALUES (?, ?, ?)`;
-
             db.run(insertQuery, [FROM_USER_ID, TO_USER_ID, MESSAGE_TEXT], function(err) {
                 if (err) {
                     console.error(err);

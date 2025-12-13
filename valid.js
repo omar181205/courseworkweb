@@ -14,14 +14,13 @@ const isStrongPassword = (password) => {
   return passRegex.test(password.trim());
 };
  
-// Checks if required fields exist and are non-empty
 const validateRequired = (fields, requiredKeys) => {
   for (const key of requiredKeys) {
     if (!fields[key] || !String(fields[key]).trim()) {
       return `${key} is required`;
     }
   }
-  return null; // no errors
+  return null;
 };
  
 const validateEmail = (email) => {

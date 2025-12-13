@@ -6,7 +6,6 @@ const signToken = (id, role) => {
     return jwt.sign({id, role}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN});
 }
 
-// POST /signup
 const signUp = (req, res) => {
   const name = req.body.name;
     const email = req.body.email;
@@ -22,8 +21,6 @@ const signUp = (req, res) => {
       console.error(err);
       return res.status(500).send('Error hashing password.');
     }
-
-    // Insert with parameterized query
     const query = `INSERT INTO USER (NAME, EMAIL, ROLE, PASSWORD) VALUES 
     (?, ?, ?, ?)`;
     const params = [name, email, role, hashedPassword];
@@ -36,8 +33,6 @@ const signUp = (req, res) => {
         console.error(err);
         return res.status(500).send('Database error.');
       }
-
-      // Create token using this.lastID from the statement
       const token = signToken(this.lastID, role);
       return res.status(201).json({
         status: 'success',
@@ -66,7 +61,6 @@ const login = (req, res) => {
         }
 
 
-        // Compare the hashed password
         bcrypt.compare(password, row.PASSWORD, (err, isMatch) => {
             if (err) {
                 console.error(err);
@@ -77,7 +71,6 @@ const login = (req, res) => {
                 return res.status(401).send('Invalid credentials.');
             }
 
-            // Generate JWT token for successful login
             const token = signToken(row.ID, row.ROLE);
             return res.status(200).json({
                 message: 'Login successful',

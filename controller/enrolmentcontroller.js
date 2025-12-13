@@ -1,6 +1,5 @@
 const { db } = require('../db');
 
-// Get all enrollments
 const getAllEnrolments = (req, res) => {
     const query = `SELECT * FROM ENROLMENT`;
 
@@ -17,8 +16,6 @@ const getAllEnrolments = (req, res) => {
         });
     });
 };
-
-// Get courses for logged in student
 const getStudentCourses = (req, res) => {
     const studentId = req.user.id;
 
@@ -38,7 +35,6 @@ const getStudentCourses = (req, res) => {
     });
 };
 
-// Get students enrolled in a specific course
 const getStudentsByCourseid = (req, res) => {
     const courseId = req.params.courseId;
 
@@ -57,8 +53,6 @@ const getStudentsByCourseid = (req, res) => {
         });
     });
 };
-
-// Enroll a student in a course
 const enrollStudent = (req, res) => {
     const courseId = req.params.courseId;
     const STUDENT_ID = req.body.STUDENT_ID;
@@ -68,17 +62,58 @@ const enrollStudent = (req, res) => {
         return res.status(400).json({ error: 'STUDENT_ID and EMAIL are required' });
     }
 
-    const query = `INSERT INTO ENROLMENT (COURSE_ID, STUDENT_ID, EMAIL) VALUES (?, ?, ?)`;
+    // First, insert the enrollment
+    const enrollQuery = `INSERT INTO ENROLMENT (COURSE_ID, STUDENT_ID, EMAIL) VALUES (?, ?, ?)`;
 
-    db.run(query, [courseId, STUDENT_ID, EMAIL], function(err) {
+    db.run(enrollQuery, [courseId, STUDENT_ID, EMAIL], function(err) {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
         }
 
-        res.status(201).json({
-            status: 'success',
-            message: 'Student enrolled successfully'
+        // Then, decrease the course capacity
+        const updateCapacityQuery = `UPDATE COURSES SET CAPACITY = CAPACITY - 1 WHERE COURSE_ID = ?`;
+        
+        db.run(updateCapacityQuery, [courseId], function(err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Failed to update capacity' });
+            }
+
+            res.status(201).json({
+                status: 'success',
+                message: 'Student enrolled successfully and capacity decreased'
+            });
+        });
+    });
+};
+const removeStudent = (req, res) => {
+    const courseId = req.params.courseId;
+    const studentId = req.params.studentId;
+
+    if (!courseId || !studentId) {
+        return res.status(400).json({ error: 'COURSE_ID and STUDENT_ID are required' });
+    }
+    const deleteQuery = `DELETE FROM ENROLMENT WHERE COURSE_ID = ? AND STUDENT_ID = ?`;
+
+    db.run(deleteQuery, [courseId, studentId], function(err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        const updateCapacityQuery = `UPDATE COURSES SET CAPACITY = CAPACITY + 1 WHERE COURSE_ID = ?`;
+        
+        db.run(updateCapacityQuery, [courseId], function(err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Failed to update capacity' });
+            }
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Student removed from course successfully and capacity increased'
+            });
         });
     });
 };
@@ -87,5 +122,6 @@ module.exports = {
     getAllEnrolments,
     getStudentCourses,
     getStudentsByCourseid,
-    enrollStudent
+    enrollStudent,
+    removeStudent
 };
